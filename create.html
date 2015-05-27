@@ -1,0 +1,456 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<base href="/">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Trading Desk</title>
+	<meta name="description" content="" />
+	<link rel="shortcut icon" href="#" />
+	<link href='http://fonts.googleapis.com/css?family=Alegreya+Sans' rel='stylesheet' type='text/css'> 
+	<meta name="viewport" content="width=device-width"/>
+	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<script src="http://open.mediamath.com/demo/tradingdesk/assets/_js/jquery-1.11.0.min.js"></script>
+	<script src="http://open.mediamath.com/demo/tradingdesk/assets/_js/jquery.placeholder.js"></script>
+	<script src="http://open.mediamath.com/demo/tradingdesk/assets/_js/jquery-ui-1.10.3.min.js"></script>
+	<script rel="stylesheet" href="http://open.mediamath.com/demo/tradingdesk/assets/_js/jqueryui/custom/jquery-ui-1.10.4.custom.min.js"></script>
+	<script src="http://open.mediamath.com/demo/tradingdesk/assets/_js/jquery-ui-1.10.4.custom.min.js"></script>
+	<script src="http://open.mediamath.com/demo/tradingdesk/assets/_js/spin.min.js"></script>
+	<script src="http://open.mediamath.com/demo/tradingdesk/assets/_js/chosen/chosen.jquery.min.js"></script>
+	<script src="http://code.highcharts.com/highcharts.js"></script>
+	<script src="http://code.highcharts.com/highcharts-more.js"></script>
+	<!--[if lt IE 9]><script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+	<link rel="stylesheet" href="http://open.mediamath.com/demo/tradingdesk/assets/_css/bootstrap.css" />
+	<link rel="stylesheet" href="http://open.mediamath.com/demo/tradingdesk/assets/_css/jquery.selectBoxIt.css" />
+	<link rel="stylesheet" type="text/css" href="http://open.mediamath.com/demo/tradingdesk/assets/_css/jqueryui/custom/jquery-ui-1.10.4.custom.css" />
+	<link rel="stylesheet" type="text/css" href="accuen-agency/common.css"/>
+	<link rel="stylesheet" type="text/css" href="accuen-agency/demo.css"/>
+	<link rel="stylesheet" type="text/css" href="accuen-agency/menu.css" />
+	<!-- <link rel="stylesheet" type="text/css" href="http://open.mediamath.com/demo/tradingdesk/assets/_css/common.css"/>
+	<link rel="stylesheet" type="text/css" href="http://open.mediamath.com/demo/tradingdesk/assets/_css/demo.css"/>
+	<link rel="stylesheet" type="text/css" href="http://open.mediamath.com/demo/tradingdesk/assets/_css/menu.css" /> -->
+  	<link rel="stylesheet" type="text/css" href="http://open.mediamath.com/demo/tradingdesk/assets/_css/chosen/chosen.min.css">
+</head>
+<script>
+$(document).ready(function(){
+	var config = {
+      '.chosen-select'  : {width: '100%', disable_search_threshold:10},
+      '.chosen-select-deselect'  : {allow_single_deselect:true},
+      '.chosen-select-no-single' : {disable_search_threshold:10},
+      '.chosen-select-campaign-no-results': {no_results_text:'nothing found.'}
+    }
+
+    for (var selector in config)
+    {
+    	$(selector).chosen(config[selector]);
+    }
+
+    $( "input.datepicker" ).datepicker({dateFormat: 'd/m/yy'});
+
+
+	$('input, textarea').placeholder();
+
+	$('#search').submit(function(){
+		event.preventDefault();
+		var search = encodeURIComponent($('#search_criteria').val());
+		if (search.length == 0){search = '0';}
+
+		var current_url = 'http://open.mediamath.com/demo/tradingdesk/campaigns/create';
+		var parts = current_url.split('/');
+		var length = parts.length;
+		var new_url = current_url.replace(parts[length-2]+'/'+parts[length-1],'');
+		window.location = new_url + '0/' + search.replace("'",'%27'); 
+	});
+
+	$('textarea#targetting').bind({
+		focus: function(){
+			$(this).animate({
+				width: "300px",
+				height: "110px"
+			});
+		},
+		focusout: function(){
+			$(this).animate({
+				width: "186px",
+				height: "64px"
+			});
+		}
+	});
+
+	$('textarea#ad_server_tags').bind({
+		focus: function(){
+			$(this).animate({
+				width: "500px",
+				height: "250px"
+			});
+		},
+		focusout: function(){
+			$(this).animate({
+				width: "186px",
+				height: "64px"
+			});
+		}
+	});
+
+});
+
+var first_load = true;
+function show_ajax_loader(show)
+{		
+		var opts = {
+		  lines: 10, // The number of lines to draw
+		  length: 0, // The length of each line
+		  width: 5, // The line thickness
+		  radius: 13, // The radius of the inner circle
+		  corners: 1, // Corner roundness (0..1)
+		  rotate: 0, // The rotation offset
+		  direction: 1, // 1: clockwise, -1: counterclockwise
+		  color: '#fff', // #rgb or #rrggbb or array of colors
+		  speed: 0.8, // Rounds per second
+		  trail: 15, // Afterglow percentage
+		  shadow: false, // Whether to render a shadow
+		  hwaccel: false, // Whether to use hardware acceleration
+		  className: 'spinner', // The CSS class to assign to the spinner
+		  zIndex: 2e9, // The z-index (defaults to 2000000000)
+		  top: '120', // Top position relative to parent in px
+		  left: '50px' // Left position relative to parent in px
+		};
+		
+		var target = document.getElementById('ajax_loader');
+		
+	if (show)
+	{
+		if(first_load){var spinner = new Spinner(opts).spin(target); first_load=false;}
+		else{spinner;}
+
+		$("#dialog-ajax").dialog({
+	      	modal: true,
+	      	closeOnEscape: false,
+	      	draggable: false,
+	      	dialogClass: 'ajax-loading',
+			width: 250,
+			height: 150,
+			resizable: false
+	    });
+	}
+	else
+	{
+		$("#dialog-ajax").dialog('close');
+	}
+}
+
+
+
+
+</script>
+
+<div id="top_heading">
+	<div class="container960">
+			<!-- <div class="" id="logoHead">
+			</div> -->
+			<img id="accuen-logo" src="http://www.visualdna.com/wp-content/uploads/2014/09/ACCUEN_logo_big1.png">
+			
+			<div class="" id="userType">
+				<div id="cssmenu">
+					<ul>
+					    <li class=""><a href="accuen-agency/users.html"><span class="menu-option">Home</span></a></li>
+					    <li class="active has-sub"><a href="javascript: void(0);"><span class="menu-option">Campaigns</span></a>
+					        <ul>
+					        						        	<li><a href="accuen-agency/create.html"><span>Create</span></a></li>
+					        						        	<li><a href="accuen-agency/pending.html"><span>Pending</span></a></li>
+					        	<li><a href="accuen-agency/accepted.html"><span>Accepted</span></a></li>
+					        	<li class="last"><a href="accuen-agency/rejected.html"><span>Rejected</span></a></li>
+					        </ul>
+					   	</li>
+					    <li class="">
+					    	<a href="javascript: void(0);"><span class="menu-option">Reports</span></a>
+
+					    	<ul>
+					    		<li> <a href="accuen-agency/reports.html"> <span class="menu-option">Statistics</span> </a> </li>
+					    							    	</ul>
+
+					    </li>
+					    					    <li class="last"><a href="accuen-agency/login.html">Logout</a></li>
+					</ul>
+				</div>
+			</div>
+				</div>
+</div>
+<div class="breadcrumb">
+	<div class="container960">
+		<img src="http://open.mediamath.com/demo/tradingdesk/assets/_img/icons/pendingCampaign.png"/><h1>Create Campaign</h1>	</div>
+</div>
+<div class="container960">
+	<div id="dialog-ajax" title="Loading" style="display: none; text-align: center; background-color: #38617f;">
+		<div id="ajax_loader" style="float:left; width: 45%; margin: 65px 0 0 0px;">
+		    <!-- <img src="http://open.mediamath.com/demo/tradingdesk/assets/_img/ajax_loader.gif" /> -->
+	    </div>
+	    <div style="float: left; margin: 50px 0px 0px 0px; color: #69889f; font-size: 22px;">
+	    	Loading
+		</div>
+	</div>
+<script>
+function new_advertiser()
+{
+	$('#advertiser_cell').empty();
+	$('#advertiser_cell').html('<input id="new_advertiser" name="new_advertiser" type="text" maxlength="255" size="50" value="" /><input type="hidden" name="advertiser_id" value="0" />');
+	$('.new_advertiser_details').show();
+}
+
+$(document).ready(function(){
+
+	
+
+    $("#start_date_btn").click(function(event) {
+    	event.preventDefault();
+  		$( "#start_date" ).datepicker('show');
+	});
+
+	$("#end_date_btn").click(function(event) {
+    	event.preventDefault();
+  		$( "#end_date" ).datepicker('show');
+	});
+
+	$("#ad_server_id").change(function(){
+		if ($('#ad_server_id option:selected').text() == 'Other') //If other show other name field
+		{
+			$('#other_ad_server_row').css('display', 'table-row');
+		}
+		else
+		{
+			$('#other_ad_server_row').css('display', 'none');
+		}
+
+	});
+
+	
+	var cpm_fix_pos = $("#fixed").position();
+	var cpm_dynamic_pos = $("#cpm_type").position();
+
+	$("#fixed").mouseenter(function(){
+		$("#cpm_tooltip").empty().append("You will be billed on a fixed rate CPM.").slideDown('500');
+		$("#cpm_tooltip_arrow").css({left:cpm_fix_pos.left}).show();
+	});
+
+	$("#cpm_type").mouseenter(function(){
+		$("#cpm_tooltip").empty().append("You will be billed on a variable CPM, which may be higher or lower than your goal.").slideDown('500');
+		$("#cpm_tooltip_arrow").css({left:cpm_dynamic_pos.left}).show();
+	});
+
+	$("#cpm_row").mouseleave(function(){
+		$("#cpm_tooltip, #cpm_tooltip_arrow").hide();
+	});
+});
+
+</script>
+<div id="page_campaign_create">
+	<div>
+		<div class="sectionbox">
+				<form action="http://open.mediamath.com/demo/tradingdesk/campaigns/new_campaign" method="post" accept-charset="utf-8" class="jform" autocomplete="off">				<table align="center" id="create_campaign" class="table-form">
+				<tr>
+					<td align="right">Advertiser</td>
+					<td id="advertiser_cell" width="250"><select name="advertiser_id" id="advertiser_id" class="chosen-select">
+<option value="20">CDONGroup-Nelly.com</option>
+<option value="18">Example Advertiser</option>
+<option value="19">WWF</option>
+</select></td>
+					<td><a href="javascript: new_advertiser();" class="side_link">+ New Advertiser</a></td>
+				</tr>
+				<tr class="new_advertiser_details" style="display: none;">
+					<td align="right">Advertiser Ad Server</td>
+					<td><select name="advertiser_ad_server_id" id="advertiser_ad_server_id" class="chosen-select">
+<option value="1">Atlas</option>
+<option value="2">Dart for Advertisers (DFA)</option>
+<option value="3">EyeWonder</option>
+<option value="4">mediaFORGE</option>
+<option value="6">Mediamind</option>
+<option value="7">Mediaplex</option>
+<option value="8">Pointroll</option>
+<option value="9">Terminal One</option>
+<option value="10">Yield Manager</option>
+<option value="11">Other</option>
+</select></td>
+					<td></td>
+				</tr>
+				<tr class="new_advertiser_details" style="display: none;">
+					<td align="right">Advertiser Domain</td>
+					<td><input type="text" name="domain" value="" id="domain" placeholder="www.advertiser.com"  /></td>
+					<td></td>
+				</tr>
+				<tr class="new_advertiser_details" style="display: none;">
+					<td align="right">Advertiser Vertical</td>
+					<td><select name="vertical_id" id="vertical_id" class="chosen-select">
+<option value="31">Adult</option>
+<option value="1">Air Travel</option>
+<option value="30">Alcohol</option>
+<option value="2">Autos</option>
+<option value="3">Business Services</option>
+<option value="5">Clothing & Accessories</option>
+<option value="6">Computer (Hardware & Software)</option>
+<option value="28">Consumer Goods</option>
+<option value="7">Credit Cards</option>
+<option value="8">Dating</option>
+<option value="11">Education</option>
+<option value="4">Electronics</option>
+<option value="9">Employment</option>
+<option value="12">Entertainment</option>
+<option value="13">Food & Beverages</option>
+<option value="27">Gambling</option>
+<option value="29">Government</option>
+<option value="16">Home & Garden</option>
+<option value="24">Hotels</option>
+<option value="17">Insurance</option>
+<option value="18">Internet Services</option>
+<option value="25" selected="selected">Media</option>
+<option value="26">Non-Profit</option>
+<option value="19">Personal Care</option>
+<option value="20">Personal Finance</option>
+<option value="14">Pets</option>
+<option value="10">Pharmaceuticals (Rx & OTC)</option>
+<option value="21">Real Estate</option>
+<option value="33">Religion and Spirituality</option>
+<option value="22">Sporting Goods</option>
+<option value="23">Telecommunications</option>
+<option value="32">Tobacco</option>
+<option value="15">Toys</option>
+<option value="34">Weight Loss</option>
+</select></td>
+					<td></td>
+				</tr>
+				<tr class="new_advertiser_details" style="display: none;">
+					<td align="right">Pixel Format</td>
+					<td><select name="pixel_format" id="pixel_format" class="chosen-select">
+<option value="js" selected="selected">JavaScript Container</option>
+<option value="iframe">Iframe Container</option>
+<option value="image">Image</option>
+<option value="dfa">Image for DFA Floodlight</option>
+<option value="uat">Image for Atlas UAT</option>
+</select></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td align="right">Campaign Name</td>
+					<td><input type="text" name="campaign_name" value="" id="campaign_name" size="50" maxlength="255"  /></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td align="right">Start Date</td>
+					<td><input type="text" name="start_date" value="" id="start_date" class="datepicker" size="50" autocomplete="off"  /><a href="" id="start_date_btn"><img src="http://open.mediamath.com/demo/tradingdesk/assets/_img/icons/datepicker.png"></a></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td align="right">End Date</td>
+					<td><input type="text" name="end_date" value="" id="end_date" class="datepicker" size="50" autocomplete="off"  /><a href="" id="end_date_btn"><img src="http://open.mediamath.com/demo/tradingdesk/assets/_img/icons/datepicker.png"></a></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td align="right">Ad Server</td>
+					<td id="add_server_cell"><select name="ad_server_id" id="ad_server_id" class="chosen-select">
+<option value="1">Atlas</option>
+<option value="2">Dart for Advertisers (DFA)</option>
+<option value="3">EyeWonder</option>
+<option value="4">mediaFORGE</option>
+<option value="6">Mediamind</option>
+<option value="7">Mediaplex</option>
+<option value="8">Pointroll</option>
+<option value="9">Terminal One</option>
+<option value="10">Yield Manager</option>
+<option value="11">Other</option>
+</select></td>
+					<td></td>
+				</tr>
+				<tr id="other_ad_server_row" style="display: none;">
+					<td align="right">Other Ad Server</td>
+					<td><input type="text" name="other_ad_server" value="" id="other_ad_server" size="50"  /></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td align="right">Post Click Window (Days)</td>
+					<td><input type="text" name="pc_window_days" value="30" id="pc_window_days " size="50"  /></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td align="right">Post View Window (Days)</td>
+					<td><input type="text" name="pv_window_days" value="14" id="pv_window_days" size="50"  /></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td align="right">Currency</td>
+					<td><select name="currency_code" id="currency_code" class="chosen-select">
+<option value="ARS">Argentine Peso</option>
+<option value="AUD">Australian Dollar</option>
+<option value="BRL">Brazlian Rial</option>
+<option value="GBP" selected="selected">British Pound</option>
+<option value="CAD">Canadian Dollar</option>
+<option value="CLP">Chilean Peso</option>
+<option value="CNY">Chinese Yuan Renminbi</option>
+<option value="COP">Colombian Peso</option>
+<option value="CZK">Czech Koruna</option>
+<option value="DKK">Danish Krone</option>
+<option value="EGP">Egyptian Pound</option>
+<option value="AED">Emirati Dirham</option>
+<option value="EUR">Euro</option>
+<option value="HKD">Hong Kong Dollar</option>
+<option value="INR">Indian Rupee</option>
+<option value="ILS">Israeli Shekel</option>
+<option value="JPY">Japanese Yen</option>
+<option value="KWD">Kuwaiti Dinar</option>
+<option value="MYR">Malaysian Ringgit</option>
+<option value="MXN">Mexican Peso</option>
+<option value="MAD">Moroccan Dirham</option>
+<option value="NZD">New Zealand Dollar</option>
+<option value="NOK">Norweigian Krone</option>
+<option value="PLN">Polish Zloty</option>
+<option value="QAR">Qatari Riyal</option>
+<option value="RUB">Russian Ruble</option>
+<option value="SAR">Saudi Arabian Riyal</option>
+<option value="SGD">Singapore Dollar</option>
+<option value="ZAR">South African Rand</option>
+<option value="KRW">South Korean Won</option>
+<option value="SEK">Swedish Krona</option>
+<option value="CHF">Swiss Franc</option>
+<option value="TRY">Turkish Lira</option>
+<option value="USD">US Dollar</option>
+</select></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td align="right">Total Budget</td>
+					<td><input type="text" name="total_budget" value="" id="total_budget" size="50"  /></td>
+					<td></td>
+				</tr>
+				<tr id="cpm_row">
+						<td align="right">CPM Type</td>
+						<td>
+							<div id="cpm_tooltip"></div>
+							<div id="cpm_tooltip_arrow"></div>
+							<input type="radio" name="cpm_type" value="fixed" id="fixed"  /> <label for="fixed">Fixed</label>
+							<input type="radio" name="cpm_type" value="dynamic" checked="checked" id="cpm_type"  /> <label for="cpm_type">Dynamic</label>
+						</td>
+						<td></td>
+					</tr>				<tr>
+					<td align="right">CPA Target</td>
+					<td><input type="text" name="cpa_target" value="" id="cpa_target" size="50"  /></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td align="right" valign="top" style="padding-top:12px;">Targeting</td>
+					<td colspan="2"><textarea name="targetting" cols="40" rows="10" id="targetting" placeholder="Specify applicable regions or other targeting options." ></textarea></td>
+					<td></td>
+				</tr>
+				<tr>
+					<td align="right" valign="top" style="padding-top:12px;">Ad Server Tags</td>
+					<td colspan="2"><textarea name="ad_server_tags" cols="40" rows="10" id="ad_server_tags" placeholder="Ad server tag(s)." style="white-space: nowrap;" ></textarea></td>
+				</tr>
+				<tr class="spacer"></tr>
+				<tr>
+					<td></td>
+					<td><input id="cancel_button" type="button" value="Cancel" onclick="window.location='http://open.mediamath.com/demo/tradingdesk/main';" class="faded_button" /> <input type="submit" name="create" value="Create"  /></td>
+					<td></td>
+				</tr>
+				</form>			</table>
+		</div>
+	</div>
+</div>
+		</div>
+	</body>
+</html>
